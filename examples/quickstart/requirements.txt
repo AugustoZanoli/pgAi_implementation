@@ -1,0 +1,9 @@
+pgai
+psycopg
+psycopg-pool
+pgvector
+python-dotenv
+litellm>=1.102.1
+datasets
+numpy
+structlog
