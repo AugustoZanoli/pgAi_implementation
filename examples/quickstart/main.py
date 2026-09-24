@@ -21,7 +21,7 @@ from pprint import pprint
 EMBEDDING_MODEL = "gemini/gemini-embedding-001"
 EMBEDDING_DIMENSIONS = 768
 # Chat model used for the RAG generation step.
-CHAT_MODEL = "gemini/gemini-2.5-flash"
+CHAT_MODEL = "gemini/gemini-3.6-flash"
 
 # Configure structlog to only show WARNING level logs and above
 structlog.configure(
@@ -64,20 +64,21 @@ async def create_vectorizer(conn: psycopg.AsyncConnection):
     - The embedding model to use (Gemini's gemini-embedding-001 with 768 dimensions)
     - The destination view for querying embeddings ('wiki_embedding')
     """
-    async with conn.cursor() as cur:    
+    async with conn.cursor() as cur:
         await cur.execute("""
             SELECT ai.create_vectorizer(
                 'wiki'::regclass,
                 loading => ai.loading_column(column_name => 'text'),
                 destination => ai.destination_table(target_table => 'wiki_embedding_storage'),
                 embedding => ai.embedding_litellm(
-                    'gemini/gemini-embedding-001',
-                    768,
-                    api_key_name => 'GOOGLE_API_KEY'
+                    %s,
+                    %s,
+                    api_key_name => 'GOOGLE_API_KEY',
+                    extra_options => '{"dimensions": 768}'::jsonb
                 ),
                 if_not_exists => true
             );
-        """)   
+        """, (EMBEDDING_MODEL, EMBEDDING_DIMENSIONS))
     await conn.commit()
 
 async def load_wiki_articles_from_huggingface(conn: psycopg.AsyncConnection):
