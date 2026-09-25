@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Popula a tabela `blogs` com o dataset sgoel9/sam_altman_essays do Hugging Face.
 
 Este script substitui a chamada `ai.load_dataset(...)`, que nao esta disponivel

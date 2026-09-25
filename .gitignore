@@ -1,3 +1,13 @@
+# Variaveis de ambiente (mantem os .env.example)
 .env
 **/.env
 !**/.env.example
+
+# Ambientes virtuais Python
+.venv
+**/.venv
+
+# Artefatos do Python
+__pycache__/
+**/__pycache__/
+*.py[cod]

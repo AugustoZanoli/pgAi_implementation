@@ -1,9 +1,24 @@
--- Migration substituída por um script de população para evitar ter que instalar as dependencias de python no postgres;
-
+-- A funcao ai.load_dataset NAO existe no modelo atual do pgai (instalado via
+-- `pgai install`). Ela depende das funcoes que rodam Python dentro do Postgres
+-- (plpython3u), que nao sao criadas nesse fluxo. Por isso o comando abaixo
+-- falha com "function ai.load_dataset(...) does not exist".
+--
+-- Modelo antigo (nao use):
 -- SELECT ai.load_dataset(
---     'sgoel9/sam_altman_essays', 
---     'default', 
---     table_name=>'blogs',
---     batch_size=>50,
---     max_batches=>1
+--     'sgoel9/sam_altman_essays',
+--     'default',
+--     table_name => 'blogs',
+--     batch_size => 50,
+--     max_batches => 1
 -- );
+--
+-- Substituido por um script Python que baixa o dataset no host e popula a
+-- tabela `blogs` via conexao normal. A partir de resources/:
+--
+--     cd db/scripts
+--     python3 -m venv .venv
+--     .venv/bin/pip install -r requirements.txt
+--     set -a && . ../../.env && set +a
+--     .venv/bin/python populate_blogs.py --recreate
+--
+-- Veja db/scripts/populate_blogs.py para detalhes e opcoes (--limit, --recreate).
